@@ -15,7 +15,7 @@ test_succeeds("can use layer_multivariate_normal_tri_l in a keras model", {
   eps <-
     tfd_normal(loc = 0, scale = scale_noise) %>% tfd_sample(c(n, 2L))
   y = tf$matmul(x, scale_tril) + eps
-  d <- if (tf$executing_eagerly()) y$shape[-1] else y$shape[-1]$value
+  d <- if (tf$executing_eagerly()) y$shape[[2]] else y$shape[[2]]$value
 
   model <- keras_model_sequential() %>%
     layer_dense(units = params_size_multivariate_normal_tri_l(d)) %>%
@@ -287,37 +287,45 @@ test_succeeds("layer_variational_gaussian_process works", {
 
   skip_if_tf_below("2.0")
 
+  library(keras)
+
   x <- runif(1000, 0, 60)
   y <- 5 + sin(2*x) + 0.04*x
 
-  kernel_fn <- reticulate::py_run_string("
-import tensorflow as tf
-import tensorflow_probability as tfp
-tf1 = tf.compat.v1
-class KernelFn(tf.keras.layers.Layer):
+  bt <- reticulate::import_builtins()
 
-      def __init__(self, **kwargs):
-        super(KernelFn, self).__init__(**kwargs)
+  KernelFn <- reticulate::PyClass(
+    "KernelFn",
+    inherit = tensorflow::tf$keras$layers$Layer,
+    list(
+      `__init__` = function(self, ...) {
+        super()$`__init__`(...)
+        self$`_amplitude` = self$add_variable(
+          initializer = tf$initializers$constant(.54),
+          dtype = 'float32',
+          name = 'amplitude'
+        )
+        NULL
+      },
 
-        self._amplitude = self.add_variable(
-            initializer=tf1.initializers.constant(.54),
-            dtype='float32',
-            name='amplitude')
+      call = function(self, x, ...) {
+        x
+      },
 
-      def call(self, x):
-        return x
+      kernel = bt$property(
+       reticulate::py_func(
+          function(self)
+            (get_psd_kernels())$ExponentiatedQuadratic(amplitude = tf$nn$softplus(self$`_amplitude`))
+        )
+      )
+    )
+  )
 
-      @property
-      def kernel(self):
-        return tfp.positive_semidefinite_kernels.ExponentiatedQuadratic(
-            amplitude=tf.nn.softplus(self._amplitude))
-")
-
-  model <- keras::keras_model_sequential() %>%
-    keras::layer_dense(units = 10) %>%
+  model <- keras_model_sequential() %>%
+    layer_dense(units = 10) %>%
     layer_variational_gaussian_process(
       num_inducing_points = 30,
-      kernel_provider = kernel_fn$KernelFn(dtype = "float32")
+      kernel_provider = KernelFn()
     )
 
   batch_size <- 64

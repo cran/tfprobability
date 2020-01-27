@@ -1,6 +1,6 @@
 Package: tfprobability
 Title: Interface to 'TensorFlow Probability'
-Version: 0.8.0.0
+Version: 0.9.0.0
 Authors@R: c(
     person("Sigrid", "Keydana", email = "sigrid@rstudio.com", role = c("aut", "cre")),
     person("Daniel", "Falbel", email = "daniel@rstudio.com", role = c("ctb")),
@@ -24,11 +24,11 @@ Imports: tensorflow (>= 2.0.0), reticulate, keras, magrittr
 Suggests: testthat (>= 2.1.0), knitr
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2019-10-25 14:31:45 UTC; key
+Packaged: 2020-01-27 10:40:22 UTC; key
 Author: Sigrid Keydana [aut, cre],
   Daniel Falbel [ctb],
   Kevin Kuo [ctb] (<https://orcid.org/0000-0001-7803-7901>),
   RStudio [cph]
 Maintainer: Sigrid Keydana <sigrid@rstudio.com>
 Repository: CRAN
-Date/Publication: 2019-10-30 17:10:02 UTC
+Date/Publication: 2020-01-27 11:00:02 UTC

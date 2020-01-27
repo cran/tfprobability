@@ -4,7 +4,10 @@
 \alias{tfd_log_normal}
 \title{Log-normal distribution}
 \usage{
-tfd_log_normal(loc = NULL, scale = NULL, validate_args = FALSE,
+tfd_log_normal(loc, scale, validate_args = FALSE,
+  allow_nan_stats = TRUE, name = "LogNormal")
+
+tfd_log_normal(loc, scale, validate_args = FALSE,
   allow_nan_stats = TRUE, name = "LogNormal")
 }
 \arguments{
@@ -32,8 +35,15 @@ The LogNormal distribution models positive-valued random variables
 whose logarithm is normally distributed with mean \code{loc} and
 standard deviation \code{scale}. It is constructed as the exponential
 transformation of a Normal distribution.
+
+The LogNormal distribution models positive-valued random variables
+whose logarithm is normally distributed with mean \code{loc} and
+standard deviation \code{scale}. It is constructed as the exponential
+transformation of a Normal distribution.
 }
 \seealso{
+For usage examples see e.g. \code{\link[=tfd_sample]{tfd_sample()}}, \code{\link[=tfd_log_prob]{tfd_log_prob()}}, \code{\link[=tfd_mean]{tfd_mean()}}.
+
 For usage examples see e.g. \code{\link[=tfd_sample]{tfd_sample()}}, \code{\link[=tfd_log_prob]{tfd_log_prob()}}, \code{\link[=tfd_mean]{tfd_mean()}}.
 
 Other distributions: \code{\link{tfd_autoregressive}},
@@ -74,9 +84,11 @@ Other distributions: \code{\link{tfd_autoregressive}},
   \code{\link{tfd_negative_binomial}},
   \code{\link{tfd_normal}},
   \code{\link{tfd_one_hot_categorical}},
-  \code{\link{tfd_pareto}},
+  \code{\link{tfd_pareto}}, \code{\link{tfd_pixel_cnn}},
   \code{\link{tfd_poisson_log_normal_quadrature_compound}},
-  \code{\link{tfd_poisson}}, \code{\link{tfd_quantized}},
+  \code{\link{tfd_poisson}},
+  \code{\link{tfd_probit_bernoulli}},
+  \code{\link{tfd_quantized}},
   \code{\link{tfd_relaxed_bernoulli}},
   \code{\link{tfd_relaxed_one_hot_categorical}},
   \code{\link{tfd_sample_distribution}},
@@ -95,7 +107,9 @@ Other distributions: \code{\link{tfd_autoregressive}},
   \code{\link{tfd_vector_laplace_linear_operator}},
   \code{\link{tfd_vector_sinh_arcsinh_diag}},
   \code{\link{tfd_von_mises_fisher}},
-  \code{\link{tfd_von_mises}}, \code{\link{tfd_wishart}},
-  \code{\link{tfd_zipf}}
+  \code{\link{tfd_von_mises}},
+  \code{\link{tfd_wishart_linear_operator}},
+  \code{\link{tfd_wishart_tri_l}},
+  \code{\link{tfd_wishart}}, \code{\link{tfd_zipf}}
 }
 \concept{distributions}
