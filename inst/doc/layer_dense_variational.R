@@ -1,11 +1,11 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   eval = FALSE
 )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  library(tensorflow)
 #  # assume it's version 1.14, with eager not yet being the default
 #  tf$compat$v1$enable_v2_behavior()
@@ -36,13 +36,13 @@ knitr::opts_chunk$set(
 #  # test data (predictor)
 #  x_test <- seq(x_min, x_max, length.out = n) %>% as.matrix()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  ggplot(data.frame(x = x, y = y), aes(x, y)) + geom_point()
 
 ## ---- eval=TRUE, echo=FALSE, layout="l-body-outset", fig.cap = "Simulated data"----
 knitr::include_graphics("images/uncertainty_data.png")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  prior_trainable <-
 #    function(kernel_size,
 #             bias_size = 0,
@@ -57,7 +57,7 @@ knitr::include_graphics("images/uncertainty_data.png")
 #    }
 #  
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  posterior_mean_field <-
 #    function(kernel_size,
 #             bias_size = 0,
@@ -77,7 +77,7 @@ knitr::include_graphics("images/uncertainty_data.png")
 #      ))
 #    }
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  model <- keras_model_sequential() %>%
 #    layer_dense_variational(
 #      units = 2,
@@ -93,12 +93,12 @@ knitr::include_graphics("images/uncertainty_data.png")
 #      )
 #  
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  negloglik <- function(y, model) - (model %>% tfd_log_prob(y))
 #  model %>% compile(optimizer = optimizer_adam(lr = 0.01), loss = negloglik)
 #  model %>% fit(x, y, epochs = 1000)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  # each time we ask the model to predict, we get a different line
 #  yhats <- purrr::map(1:100, function(x) model(tf$constant(x_test)))
 #  means <-

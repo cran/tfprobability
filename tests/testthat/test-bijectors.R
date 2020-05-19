@@ -342,6 +342,7 @@ test_succeeds("Define a fill_triangular bijector", {
 })
 
 test_succeeds("Define a Gumbel bijector", {
+  skip_if_tfp_above("0.9")
   b <- tfb_gumbel()
   x <- runif(6)
   expect_equal(b %>% tfb_forward(x) %>% tensor_value(),
@@ -375,7 +376,7 @@ test_succeeds("Define a kumaraswamy bijector", {
   skip_if_tfp_above("0.8")
   b <- tfb_kumaraswamy(concentration1 = 2, concentration0 = 0.3)
   x <- runif(1)
-  expect_lt(b %>% tfb_forward(x) %>% tensor_value(), 1)
+  expect_lte(b %>% tfb_forward(x) %>% tensor_value(), 1)
 })
 
 
@@ -439,6 +440,7 @@ test_succeeds("Define a transpose bijector", {
 })
 
 test_succeeds("Define a weibull bijector", {
+  skip_if_tfp_above("0.9")
   b <- tfb_weibull(1.5, 2)
   x <- c(0, 0.1, 0.2)
   expect_equivalent(b %>% tfb_forward(x) %>% tensor_value(),
@@ -707,3 +709,19 @@ test_succeeds("Define an FFJORD bijector", {
   )
 
 })
+
+test_succeeds("Define a LambertWTail bijector", {
+
+  skip_if_tfp_below("0.10")
+
+  scale <- 1
+  shift <- 0
+  tailweight <- 0
+  b <- tfb_lambert_w_tail(shift, scale, tailweight)
+  x <- matrix(1:4, ncol = 2) %>% tf$cast(tf$float32)
+  y <- b %>% tfb_forward(x)
+  expect_equal(y %>% tensor_value(), x %>% tensor_value())
+
+})
+
+

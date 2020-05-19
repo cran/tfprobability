@@ -493,10 +493,15 @@ layer_variational_gaussian_process <- function(object,
                                                kernel_provider,
                                                event_shape = 1,
                                                inducing_index_points_initializer = NULL,
-                                               unconstrained_observation_noise_variance_initializer=keras::initializer_constant(-10),
+                                               unconstrained_observation_noise_variance_initializer = NULL,
                                                mean_fn = NULL,
                                                jitter = 1e-06,
                                                name = NULL) {
+  unconstrained_observation_noise_variance_initializer <-
+    if (is.null(unconstrained_observation_noise_variance_initializer))
+      keras::initializer_constant(-10)
+  else
+    unconstrained_observation_noise_variance_initializer
 
   args <- list(
     num_inducing_points = as.integer(num_inducing_points),
@@ -511,6 +516,5 @@ layer_variational_gaussian_process <- function(object,
 
   create_layer(tfp$layers$VariationalGaussianProcess, object, args)
 }
-
 
 

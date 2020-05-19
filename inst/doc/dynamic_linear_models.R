@@ -1,11 +1,11 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   eval = FALSE
 )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  library(tensorflow)
 #  library(tfprobability)
 #  
@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 #    rename(month = X1)
 #  df %>% glimpse()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  # excess returns of the asset under study
 #  ibm <- df$IBM - df$RKFREE
 #  # market excess returns
@@ -31,7 +31,7 @@ knitr::opts_chunk$set(
 #  fit <- lm(ibm ~ x)
 #  summary(fit)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  # zoom in on ibm
 #  ts <- ibm %>% matrix()
 #  # forecast 12 months
@@ -42,14 +42,14 @@ knitr::opts_chunk$set(
 #  ts_train <- tf$cast(ts_train, tf$float32)
 #  ts <- tf$cast(ts, tf$float32)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  # define the model on the complete series
 #  linreg <- ts %>%
 #    sts_dynamic_linear_regression(
 #      design_matrix = cbind(rep(1, length(x)), x) %>% tf$cast(tf$float32)
 #    )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  fit_with_vi <-
 #    function(ts,
 #             ts_train,
@@ -111,7 +111,7 @@ knitr::opts_chunk$set(
 #      )
 #    }
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  # number of VI steps
 #  n_iterations <- 300
 #  # sample size for posterior samples
@@ -140,7 +140,7 @@ knitr::opts_chunk$set(
 #  )
 #  
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  smoothed_means_intercept <- smoothed_means[, , 1] %>% colMeans()
 #  smoothed_means_slope <- smoothed_means[, , 2] %>% colMeans()
 #  
@@ -167,7 +167,7 @@ knitr::opts_chunk$set(
 #    add_column(filtered_sds_slope = c(filtered_sds_slope, rep(NA, n_forecast_steps)))
 #  
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  ggplot(forecast_df, aes(x = month, y = IBM)) +
 #    geom_line(color = "grey") +
 #    geom_line(aes(y = pred_mean), color = "cyan") +
@@ -181,7 +181,7 @@ knitr::opts_chunk$set(
 ## ---- eval=TRUE, echo=FALSE, layout="l-body-outset", fig.cap = "12-point-ahead forecasts for IBM; posterior means +/- 2 standard deviations."----
 knitr::include_graphics("images/capm_forecast.png")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  ggplot(forecast_df, aes(x = month, y = smoothed_means_intercept)) +
 #    geom_line(color = "orange") +
 #    geom_line(aes(y = smoothed_means_slope),
@@ -209,7 +209,7 @@ knitr::include_graphics("images/capm_forecast.png")
 ## ---- eval=TRUE, echo=FALSE, layout="l-body-outset", fig.cap = "Smoothing estimates from the Kálmán filter. Green: coefficient for dependence on excess market returns (slope), orange: vector of ones (intercept)."----
 knitr::include_graphics("images/capm_smoothed.png")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  ggplot(forecast_df, aes(x = month, y = filtered_means_intercept)) +
 #    geom_line(color = "orange") +
 #    geom_line(aes(y = filtered_means_slope),

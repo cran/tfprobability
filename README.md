@@ -7,9 +7,9 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![Build
 Status](https://travis-ci.org/rstudio/tfprobability.svg?branch=master)](https://travis-ci.org/rstudio/tfprobability)
+[![Actions
+Status](https://github.com/rstudio/tfprobability/workflows/R-CMD-check/badge.svg)](https://github.com/rstudio/tfprobability/)
 [![codecov](https://codecov.io/gh/rstudio/tfprobability/branch/master/graph/badge.svg)](https://codecov.io/gh/rstudio/tfprobability)
-[![AppVeyor build
-status](https://ci.appveyor.com/api/projects/status/github/rstudio/tfprobability?branch=master&svg=true)](https://ci.appveyor.com/project/rstudio/tfprobability)
 <!-- badges: end -->
 
 # tfprobability: R interface to TensorFlow Probability
@@ -63,7 +63,7 @@ High-level application of `tfprobability` to tasks like
   - density estimation with autoregressive flows
 
 are described in the vignettes/articles and/or featured on the
-[TensorFlow for R blog](https://blogs.rstudio.com/tensorflow/).
+[TensorFlow for R blog](https://blogs.rstudio.com/ai/).
 
 This introductory text illustrates the lower-level building blocks:
 distributions, bijectors, and probabilistic `keras` layers.
@@ -133,7 +133,7 @@ Bijectors are invertible transformations that allow to derive data
 likelihood under the transformed distribution from that under the base
 distribution. For an in-detail explanation, see [Getting into the flow:
 Bijectors in TensorFlow
-Probability](https://blogs.rstudio.com/tensorflow/posts/2019-04-05-bijectors-flows/)
+Probability](https://blogs.rstudio.com/ai/posts/2019-04-05-bijectors-flows/)
 on the TensorFlow for R blog.
 
 #### Affine bijector
