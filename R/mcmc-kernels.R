@@ -165,7 +165,7 @@ mcmc_uncalibrated_hamiltonian_monte_carlo <-
 #' @section References:
 #' - [Andrieu, Christophe, Thoms, Johannes. A tutorial on adaptive MCMC. _Statistics and Computing_, 2008.](https://people.eecs.berkeley.edu/~jordan/sail/readings/andrieu-thoms.pdf)
 #' - http://andrewgelman.com/2017/12/15/burn-vs-warm-iterative-simulation-algorithms/#comment-627745
-#' - [Betancourt, M. J., Byrne, S., & Girolami, M. (2014). _Optimizing The Integrator Step Size for Hamiltonian Monte Carlo_.](http://arxiv.org/abs/1411.6669)
+#' - [Betancourt, M. J., Byrne, S., & Girolami, M. (2014). _Optimizing The Integrator Step Size for Hamiltonian Monte Carlo_.](https://arxiv.org/abs/1411.6669)
 #'
 #' @param inner_kernel `TransitionKernel`-like object.
 #' @param num_adaptation_steps Scalar `integer` `Tensor` number of initial steps to
@@ -656,30 +656,28 @@ mcmc_dual_averaging_step_size_adaptation <- function(inner_kernel,
 #'   16,22),tf$float32)
 #'
 #' # Robust linear regression model
-#' robust_lm <- tfd_joint_distribution_sequential(list(
-#'   tfd_normal(loc = 0, scale = 1),
-#'   # b0
-#'   tfd_normal(loc = 0, scale = 1),
-#'   # b1
-#'   tfd_half_normal(5),
-#'   # df
-#'   function(df, b1, b0)
-#'     tfd_independent(
-#'       tfd_student_t(
-#'         # Likelihood
-#'         df = df[, NULL],
-#'         loc = b0[, NULL] + b1[, NULL] * predictors[NULL,],
-#'         scale = y_sigma[NULL,]
-#'       )
-#'    )
-#'  ),  validate_args = TRUE)
+#' robust_lm <- tfd_joint_distribution_sequential(
+#'  list(
+#'    tfd_normal(loc = 0, scale = 1, name = "b0"),
+#'    tfd_normal(loc = 0, scale = 1, name = "b1"),
+#'    tfd_half_normal(5, name = "df"),
+#'    function(df, b1, b0)
+#'      tfd_independent(
+#'        tfd_student_t(
+#'          # Likelihood
+#'            df = tf$expand_dims(df, axis = -1L),
+#'            loc = tf$expand_dims(b0, axis = -1L) +
+#'                  tf$expand_dims(b1, axis = -1L) * predictors[tf$newaxis, ],
+#'            scale = y_sigma,
+#'            name = "st"
+#'            ), name = "ind")), validate_args = TRUE)
 #'
 #'  log_prob <-function(b0, b1, df) {robust_lm %>%
 #'    tfd_log_prob(list(b0, b1, df, obs))}
 #'  step_size0 <- Map(function(x) tf$cast(x, tf$float32), c(1, .2, .5))
 #'
-#'  number_of_steps <- 100
-#'  burnin <- 50
+#'  number_of_steps <- 10
+#'  burnin <- 5
 #'  nchain <- 50
 #'
 #'  run_chain <- function() {
@@ -869,6 +867,10 @@ mcmc_metropolis_adjusted_langevin_algorithm <-
 #' args and returns a TransitionKernel instance.
 #' @param swap_proposal_fn function which take a number of replicas, and
 #' return combinations of replicas for exchange.
+#' @param state_includes_replicas Boolean indicating whether the leftmost dimension
+#' of each state sample should index replicas. If `TRUE`, the leftmost
+#' dimension of the `current_state` kwarg to `tfp.mcmc.sample_chain` will
+#' be interpreted as indexing replicas.
 #' @param name string prefixed to Ops created by this function.
 #' Default value: `NULL` (i.e., "remc_kernel").
 #'
@@ -886,6 +888,7 @@ mcmc_replica_exchange_mc <- function(target_log_prob_fn,
                                      inverse_temperatures,
                                      make_kernel_fn,
                                      swap_proposal_fn = tfp$mcmc$replica_exchange_mc$default_swap_proposal_fn(1),
+                                     state_includes_replicas = FALSE,
                                      seed = NULL,
                                      name = NULL) {
   args <- list(
@@ -896,6 +899,9 @@ mcmc_replica_exchange_mc <- function(target_log_prob_fn,
     seed = seed,
     name = name
   )
+
+  if (tfp_version() > "0.11") args$state_includes_replicas = state_includes_replicas
+
   do.call(tfp$mcmc$ReplicaExchangeMC, args)
 }
 

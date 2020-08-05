@@ -132,7 +132,7 @@ For more details on FFJORD and continous normalizing flows see Chen et al. (2018
 
 \itemize{
 \item Chen, T. Q., Rubanova, Y., Bettencourt, J., & Duvenaud, D. K. (2018). Neural ordinary differential equations. In Advances in neural information processing systems (pp. 6571-6583)
-\item \href{http://arxiv.org/abs/1810.01367}{Grathwohl, W., Chen, R. T., Betterncourt, J., Sutskever, I., & Duvenaud, D. (2018). Ffjord: Free-form continuous dynamics for scalable reversible generative models. arXiv preprint arXiv:1810.01367.}
+\item \href{https://arxiv.org/abs/1810.01367}{Grathwohl, W., Chen, R. T., Betterncourt, J., Sutskever, I., & Duvenaud, D. (2018). Ffjord: Free-form continuous dynamics for scalable reversible generative models. arXiv preprint arXiv:1810.01367.}
 }
 }
 
@@ -156,6 +156,7 @@ Other bijectors:
 \code{\link{tfb_exp}()},
 \code{\link{tfb_fill_scale_tri_l}()},
 \code{\link{tfb_fill_triangular}()},
+\code{\link{tfb_gompertz_cdf}()},
 \code{\link{tfb_gumbel_cdf}()},
 \code{\link{tfb_gumbel}()},
 \code{\link{tfb_identity}()},
@@ -186,12 +187,15 @@ Other bijectors:
 \code{\link{tfb_scale_matvec_tri_l}()},
 \code{\link{tfb_scale_tri_l}()},
 \code{\link{tfb_scale}()},
+\code{\link{tfb_shifted_gompertz_cdf}()},
 \code{\link{tfb_shift}()},
 \code{\link{tfb_sigmoid}()},
 \code{\link{tfb_sinh_arcsinh}()},
+\code{\link{tfb_sinh}()},
 \code{\link{tfb_softmax_centered}()},
 \code{\link{tfb_softplus}()},
 \code{\link{tfb_softsign}()},
+\code{\link{tfb_split}()},
 \code{\link{tfb_square}()},
 \code{\link{tfb_tanh}()},
 \code{\link{tfb_transform_diagonal}()},

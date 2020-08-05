@@ -48,7 +48,7 @@ where \code{sigma ~ half_cauchy(0, 1)}
 \section{References}{
 
 \itemize{
-\item \href{http://faculty.chicagobooth.edu/nicholas.polson/research/papers/Horse.pdf}{Carvalho, Polson, Scott. Handling Sparsity via the Horseshoe (2008)}.
+\item \href{https://faculty.chicagobooth.edu/nicholas.polson/research/papers/Horse.pdf}{Carvalho, Polson, Scott. Handling Sparsity via the Horseshoe (2008)}.
 \item \href{https://doi.org/10.1016/S0022-1694(99)00184-5}{Barry, Parlange, Li. Approximation for the exponential integral (2000)}.
 }
 }
@@ -59,6 +59,7 @@ For usage examples see e.g. \code{\link[=tfd_sample]{tfd_sample()}}, \code{\link
 Other distributions: 
 \code{\link{tfd_autoregressive}()},
 \code{\link{tfd_batch_reshape}()},
+\code{\link{tfd_bates}()},
 \code{\link{tfd_bernoulli}()},
 \code{\link{tfd_beta_binomial}()},
 \code{\link{tfd_beta}()},
@@ -68,6 +69,7 @@ Other distributions:
 \code{\link{tfd_chi2}()},
 \code{\link{tfd_chi}()},
 \code{\link{tfd_cholesky_lkj}()},
+\code{\link{tfd_continuous_bernoulli}()},
 \code{\link{tfd_deterministic}()},
 \code{\link{tfd_dirichlet_multinomial}()},
 \code{\link{tfd_dirichlet}()},
@@ -77,6 +79,7 @@ Other distributions:
 \code{\link{tfd_gamma}()},
 \code{\link{tfd_gaussian_process_regression_model}()},
 \code{\link{tfd_gaussian_process}()},
+\code{\link{tfd_generalized_normal}()},
 \code{\link{tfd_geometric}()},
 \code{\link{tfd_gumbel}()},
 \code{\link{tfd_half_cauchy}()},
@@ -85,12 +88,16 @@ Other distributions:
 \code{\link{tfd_independent}()},
 \code{\link{tfd_inverse_gamma}()},
 \code{\link{tfd_inverse_gaussian}()},
+\code{\link{tfd_johnson_s_u}()},
+\code{\link{tfd_joint_distribution_named_auto_batched}()},
 \code{\link{tfd_joint_distribution_named}()},
+\code{\link{tfd_joint_distribution_sequential_auto_batched}()},
 \code{\link{tfd_joint_distribution_sequential}()},
 \code{\link{tfd_kumaraswamy}()},
 \code{\link{tfd_laplace}()},
 \code{\link{tfd_linear_gaussian_state_space_model}()},
 \code{\link{tfd_lkj}()},
+\code{\link{tfd_log_logistic}()},
 \code{\link{tfd_log_normal}()},
 \code{\link{tfd_logistic}()},
 \code{\link{tfd_mixture_same_family}()},
@@ -109,16 +116,19 @@ Other distributions:
 \code{\link{tfd_pixel_cnn}()},
 \code{\link{tfd_poisson_log_normal_quadrature_compound}()},
 \code{\link{tfd_poisson}()},
+\code{\link{tfd_power_spherical}()},
 \code{\link{tfd_probit_bernoulli}()},
 \code{\link{tfd_quantized}()},
 \code{\link{tfd_relaxed_bernoulli}()},
 \code{\link{tfd_relaxed_one_hot_categorical}()},
 \code{\link{tfd_sample_distribution}()},
 \code{\link{tfd_sinh_arcsinh}()},
+\code{\link{tfd_spherical_uniform}()},
 \code{\link{tfd_student_t_process}()},
 \code{\link{tfd_student_t}()},
 \code{\link{tfd_transformed_distribution}()},
 \code{\link{tfd_triangular}()},
+\code{\link{tfd_truncated_cauchy}()},
 \code{\link{tfd_truncated_normal}()},
 \code{\link{tfd_uniform}()},
 \code{\link{tfd_variational_gaussian_process}()},
@@ -130,6 +140,7 @@ Other distributions:
 \code{\link{tfd_vector_sinh_arcsinh_diag}()},
 \code{\link{tfd_von_mises_fisher}()},
 \code{\link{tfd_von_mises}()},
+\code{\link{tfd_weibull}()},
 \code{\link{tfd_wishart_linear_operator}()},
 \code{\link{tfd_wishart_tri_l}()},
 \code{\link{tfd_wishart}()},

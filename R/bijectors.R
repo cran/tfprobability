@@ -887,7 +887,7 @@ tfb_real_nvp_default_template <- function(hidden_layers,
 #' - [George Papamakarios, Theo Pavlakou, and Iain Murray. Masked Autoregressive Flow for Density Estimation. In _Neural Information Processing Systems_, 2017.](https://arxiv.org/abs/1705.07057)
 #' - [Laurent Dinh, Jascha Sohl-Dickstein, and Samy Bengio. Density Estimation using Real NVP. In _International Conference on Learning Representations_, 2017.](https://arxiv.org/abs/1605.08803)
 #' - [Laurent Dinh, David Krueger, and Yoshua Bengio. NICE: Non-linear Independent Components Estimation._arXiv preprint arXiv:1410.8516_,2014.](https://arxiv.org/abs/1410.8516)
-#' - [Eric Jang. Normalizing Flows Tutorial, Part 2: Modern Normalizing Flows. Technical Report_, 2018.](http://blog.evjang.com/2018/01/nf2.html)
+#' - [Eric Jang. Normalizing Flows Tutorial, Part 2: Modern Normalizing Flows. Technical Report_, 2018.](https://blog.evjang.com/2018/01/nf2.html)
 #'
 #' @param num_masked integer indicating that the first d units of the event
 #' should be masked. Must be in the closed interval `[1, D-1]`, where D
@@ -1856,15 +1856,27 @@ tfb_kumaraswamy_cdf <- function(concentration1 = 1,
 #'
 #' @inherit tfb_identity return params
 #' @param scale Floating-point `Tensor`.
+#' @param log_scale Floating-point `Tensor`. Logarithm of the scale. If this is set
+#' to `NULL`, no scale is applied. This should not be set if `scale` is set.
 #' @family bijectors
 #' @seealso For usage examples see [tfb_forward()], [tfb_inverse()], [tfb_inverse_log_det_jacobian()].
 #' @export
-tfb_scale <- function(scale,
+tfb_scale <- function(scale = NULL,
+                      log_scale = NULL,
                       validate_args = FALSE,
                       name = 'scale') {
-  tfp$bijectors$Scale(scale = scale,
-                      validate_args = validate_args,
-                      name = name)
+
+  if (tfp_version() > "0.10") {
+    tfp$bijectors$Scale(scale = scale,
+                        log_scale = log_scale,
+                        validate_args = validate_args,
+                        name = name)
+  } else {
+    tfp$bijectors$Scale(scale = scale,
+                        validate_args = validate_args,
+                        name = name)
+  }
+
 }
 
 #' Transforms unconstrained vectors to TriL matrices with positive diagonal
@@ -1968,7 +1980,7 @@ tfb_fill_scale_tri_l <- function(diag_bijector = NULL,
 #' For more details on FFJORD and continous normalizing flows see Chen et al. (2018), Grathwol et al. (2018).
 #' @section References:
 #'   -  Chen, T. Q., Rubanova, Y., Bettencourt, J., & Duvenaud, D. K. (2018). Neural ordinary differential equations. In Advances in neural information processing systems (pp. 6571-6583)
-#'   -  [Grathwohl, W., Chen, R. T., Betterncourt, J., Sutskever, I., & Duvenaud, D. (2018). Ffjord: Free-form continuous dynamics for scalable reversible generative models. arXiv preprint arXiv:1810.01367.](http://arxiv.org/abs/1810.01367)
+#'   -  [Grathwohl, W., Chen, R. T., Betterncourt, J., Sutskever, I., & Duvenaud, D. (2018). Ffjord: Free-form continuous dynamics for scalable reversible generative models. arXiv preprint arXiv:1810.01367.](https://arxiv.org/abs/1810.01367)
 #'
 #' @param state_time_derivative_fn  `function` taking arguments `time`
 #' (a scalar representing time) and `state` (a Tensor representing the
@@ -2056,7 +2068,6 @@ tfb_ffjord <- function(state_time_derivative_fn,
 #' (output) random variable(s). Must contain only positive values.
 #' @param tailweight Floating point tensor; the tail behaviors of the output random
 #' variable(s).  Must contain only non-negative values.
-
 #' @inherit tfb_identity return params
 #' @family bijectors
 #' @seealso For usage examples see [tfb_forward()], [tfb_inverse()], [tfb_inverse_log_det_jacobian()].
@@ -2075,4 +2086,135 @@ tfb_lambert_w_tail <- function(shift = NULL,
   )
   do.call(tfp$bijectors$LambertWTail, args)
 }
+
+#' Split a `Tensor` event along an axis into a list of `Tensor`s.
+#'
+#' The inverse of `split` concatenates a list of `Tensor`s along `axis`.
+#'
+#' @param num_or_size_splits Either an integer indicating the number of
+#' splits along `axis` or a 1-D integer `Tensor` or Python list containing
+#' the sizes of each output tensor along `axis`. If a list/`Tensor`, it may
+#' contain at most one value of `-1`, which indicates a split size that is
+#' unknown and determined from input.
+#' @param axis A negative integer or scalar `int32` `Tensor`. The dimension along
+#' which to split. Must be negative to enable the bijector to support
+#' arbitrary batch dimensions. Defaults to -1 (note that this is different from the `tf$Split` default of `0`).
+#' Must be statically known.
+#'
+#' @inherit tfb_identity return params
+#' @family bijectors
+#' @seealso For usage examples see [tfb_forward()], [tfb_inverse()], [tfb_inverse_log_det_jacobian()].
+#' @export
+tfb_split <- function(num_or_size_splits,
+                      axis = -1,
+                      validate_args = FALSE,
+                      name = "split") {
+  args <- list(
+    num_or_size_splits = as_integer_list(num_or_size_splits),
+    axis = as.integer(axis),
+    validate_args = validate_args,
+    name = name
+  )
+  do.call(tfp$bijectors$Split, args)
+}
+
+#' Compute `Y = g(X) = 1 - exp(-c * (exp(rate * X) - 1)`, the Gompertz CDF.
+#'
+#' This bijector maps inputs from `[-inf, inf]` to `[0, inf]`. The inverse of the
+#' bijector applied to a uniform random variable `X ~ U(0, 1)` gives back a
+#' random variable with the
+#' [Gompertz distribution](https://en.wikipedia.org/wiki/Gompertz_distribution):
+#' ```
+#' Y ~ GompertzCDF(concentration, rate)
+#' pdf(y; c, r) = r * c * exp(r * y + c - c * exp(-c * exp(r * y)))
+#' ```
+#' Note: Because the Gompertz distribution concentrates its mass close to zero,
+#' for larger rates or larger concentrations, `bijector.forward` will quickly
+#' saturate to 1.
+#'
+#' @param concentration Positive Float-like `Tensor` that is the same dtype and is
+#' broadcastable with `concentration`.
+#' This is `c` in `Y = g(X) = 1 - exp(-c * (exp(rate * X) - 1)`.
+#' @param rate Positive Float-like `Tensor` that is the same dtype and is
+#' broadcastable with `concentration`.
+#' This is `rate` in `Y = g(X) = 1 - exp(-c * (exp(rate * X) - 1)`.
+#'
+#' @inherit tfb_identity return params
+#' @family bijectors
+#' @seealso For usage examples see [tfb_forward()], [tfb_inverse()], [tfb_inverse_log_det_jacobian()].
+#' @export
+tfb_gompertz_cdf <- function(concentration,
+                             rate,
+                             validate_args = FALSE,
+                             name = "gompertz_cdf") {
+  args <- list(
+    concentration = concentration,
+    rate = rate,
+    validate_args = validate_args,
+    name = name
+  )
+  do.call(tfp$bijectors$GompertzCDF, args)
+}
+
+#' Compute `Y = g(X) = (1 - exp(-rate * X)) * exp(-c * exp(-rate * X))`
+#'
+#' This bijector maps inputs from `[-inf, inf]` to `[0, inf]`. The inverse of the
+#' bijector applied to a uniform random variable `X ~ U(0, 1)` gives back a
+#' random variable with the
+#' [Shifted Gompertz distribution](https://en.wikipedia.org/wiki/Shifted_Gompertz_distribution):
+#' ```
+#' Y ~ ShiftedGompertzCDF(concentration, rate)
+#' pdf(y; c, r) = r * exp(-r * y - exp(-r * y) / c) * (1 + (1 - exp(-r * y)) / c)
+#' ```
+#'
+#' Note: Even though this is called `ShiftedGompertzCDF`, when applied to the
+#' `Uniform` distribution, this is not the same as applying a `GompertzCDF` with
+#' a `Shift` bijector (i.e. the Shifted Gompertz distribution is not the same as
+#' a Gompertz distribution with a location parameter).
+#'
+#' Note: Because the Shifted Gompertz distribution concentrates its mass close
+#' to zero, for larger rates or larger concentrations, `bijector$forward` will
+#' quickly saturate to 1.
+#'
+#' @param concentration Positive Float-like `Tensor` that is the same dtype and is
+#' broadcastable with `concentration`.
+#' This is `c` in `Y = g(X) = (1 - exp(-rate * X)) * exp(-c * exp(-rate * X))`.
+#' @param rate Positive Float-like `Tensor` that is the same dtype and is
+#' broadcastable with `concentration`.
+#' This is `rate` in `Y = g(X) = (1 - exp(-rate * X)) * exp(-c * exp(-rate * X))`.
+#'
+#' @inherit tfb_identity return params
+#' @family bijectors
+#' @seealso For usage examples see [tfb_forward()], [tfb_inverse()], [tfb_inverse_log_det_jacobian()].
+#' @export
+tfb_shifted_gompertz_cdf <- function(concentration,
+                                     rate,
+                                     validate_args = FALSE,
+                                     name = "shifted_gompertz_cdf") {
+  args <- list(
+    concentration = concentration,
+    rate = rate,
+    validate_args = validate_args,
+    name = name
+  )
+  do.call(tfp$bijectors$ShiftedGompertzCDF, args)
+}
+
+#' Bijector that computes `Y = sinh(X)`.
+#'
+#' @inherit tfb_identity return params
+#' @family bijectors
+#' @seealso For usage examples see [tfb_forward()], [tfb_inverse()], [tfb_inverse_log_det_jacobian()].
+#' @export
+tfb_sinh <- function(validate_args = FALSE,
+                     name = "sinh") {
+  args <- list(validate_args = validate_args,
+               name = name)
+  do.call(tfp$bijectors$Sinh, args)
+}
+
+
+
+
+
 

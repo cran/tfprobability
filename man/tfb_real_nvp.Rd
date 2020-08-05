@@ -89,7 +89,7 @@ graph execution (which is the case if using \code{tf$layers}).
 \item \href{https://arxiv.org/abs/1705.07057}{George Papamakarios, Theo Pavlakou, and Iain Murray. Masked Autoregressive Flow for Density Estimation. In \emph{Neural Information Processing Systems}, 2017.}
 \item \href{https://arxiv.org/abs/1605.08803}{Laurent Dinh, Jascha Sohl-Dickstein, and Samy Bengio. Density Estimation using Real NVP. In \emph{International Conference on Learning Representations}, 2017.}
 \item \href{https://arxiv.org/abs/1410.8516}{Laurent Dinh, David Krueger, and Yoshua Bengio. NICE: Non-linear Independent Components Estimation.\emph{arXiv preprint arXiv:1410.8516},2014.}
-\item \href{http://blog.evjang.com/2018/01/nf2.html}{Eric Jang. Normalizing Flows Tutorial, Part 2: Modern Normalizing Flows. Technical Report_, 2018.}
+\item \href{https://blog.evjang.com/2018/01/nf2.html}{Eric Jang. Normalizing Flows Tutorial, Part 2: Modern Normalizing Flows. Technical Report_, 2018.}
 }
 }
 
@@ -114,6 +114,7 @@ Other bijectors:
 \code{\link{tfb_ffjord}()},
 \code{\link{tfb_fill_scale_tri_l}()},
 \code{\link{tfb_fill_triangular}()},
+\code{\link{tfb_gompertz_cdf}()},
 \code{\link{tfb_gumbel_cdf}()},
 \code{\link{tfb_gumbel}()},
 \code{\link{tfb_identity}()},
@@ -143,12 +144,15 @@ Other bijectors:
 \code{\link{tfb_scale_matvec_tri_l}()},
 \code{\link{tfb_scale_tri_l}()},
 \code{\link{tfb_scale}()},
+\code{\link{tfb_shifted_gompertz_cdf}()},
 \code{\link{tfb_shift}()},
 \code{\link{tfb_sigmoid}()},
 \code{\link{tfb_sinh_arcsinh}()},
+\code{\link{tfb_sinh}()},
 \code{\link{tfb_softmax_centered}()},
 \code{\link{tfb_softplus}()},
 \code{\link{tfb_softsign}()},
+\code{\link{tfb_split}()},
 \code{\link{tfb_square}()},
 \code{\link{tfb_tanh}()},
 \code{\link{tfb_transform_diagonal}()},

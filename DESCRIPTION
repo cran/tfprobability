@@ -1,6 +1,6 @@
 Package: tfprobability
 Title: Interface to 'TensorFlow Probability'
-Version: 0.10.0.0
+Version: 0.11.0.0
 Authors@R: c(
     person("Sigrid", "Keydana", email = "sigrid@rstudio.com", role = c("aut", "cre")),
     person("Daniel", "Falbel", email = "daniel@rstudio.com", role = c("ctb")),
@@ -19,16 +19,16 @@ SystemRequirements: TensorFlow Probability
         (https://www.tensorflow.org/probability)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
-Imports: tensorflow (>= 2.1.0), reticulate, keras, magrittr
-Suggests: tfdatasets, testthat (>= 2.1.0), knitr
+RoxygenNote: 7.1.1
+Imports: tensorflow (>= 2.2.0), reticulate, keras, magrittr
+Suggests: tfdatasets, testthat (>= 2.1.0), knitr, markdown
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2020-05-19 18:08:17 UTC; key
+Packaged: 2020-08-05 18:43:06 UTC; key
 Author: Sigrid Keydana [aut, cre],
   Daniel Falbel [ctb],
   Kevin Kuo [ctb] (<https://orcid.org/0000-0001-7803-7901>),
   RStudio [cph]
 Maintainer: Sigrid Keydana <sigrid@rstudio.com>
 Repository: CRAN
-Date/Publication: 2020-05-19 20:00:02 UTC
+Date/Publication: 2020-08-05 23:10:03 UTC
