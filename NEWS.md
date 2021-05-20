@@ -1,4 +1,25 @@
-## 0.11.0.0 (gh)
+## 0.12.0.0 (CRAN)
+
+- new distributions:
+  - tfd_skellam
+  - tfd_exp_gamma
+  - tfd_exp_inverse_gamma
+  
+- changes in distributions:
+  - remove deprecated batch_shape and event_shape in tfd_transformed_distribution
+
+- new bijectors:
+  - tfb_glow
+  - tfb_rayleigh_cdf
+  - tfb_ascending
+
+- changes in bijectors
+  - add optional low parameter to tfb_softplus.
+  - tfb_chain() takes new parameters validate_event_size and parameters
+  
+
+
+## 0.11.0.0 (CRAN)
 
 - new distributions:
   - tfd_joint_distribution_sequential_auto_batched
@@ -19,7 +40,7 @@
   - tfb_shifted_gompertz_cdf
   - tfb_sinh
 
-- bijector changes:
+- changes in bijectors:
   - add log_scale argument to tfb_scale
 
 ## 0.10.0.0 (CRAN)

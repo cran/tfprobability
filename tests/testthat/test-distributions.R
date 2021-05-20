@@ -1062,8 +1062,8 @@ test_succeeds("PixelCNN distribution works", {
   log_prob <- dist %>% tfd_log_prob(image_input, conditional_input = label_input)
 
   model <- keras_model(inputs = list(image_input, label_input), outputs = log_prob)
-  model$add_loss(-tf$reduce_mean(log_prob))
-  model$compile(optimizer=optimizer_adam(lr = .001))
+  model$add_loss(tf$negative(tf$reduce_mean(log_prob)))
+  model$compile(optimizer = optimizer_adam(lr = .001))
 
   model %>% fit(train_ds, epochs = 1)
 
@@ -1240,5 +1240,26 @@ test_succeeds("ContinuousBernoulli distribution works", {
 
 })
 
+test_succeeds("Skellam distribution works", {
 
+  skip_if_tfp_below("0.12")
+
+  d <- tfd_skellam(rate1 = 0.1, rate2 = 0.7)
+  expect_equal(d %>% tfd_log_prob(1) %>% tensor_value() %>% length(), 1)
+
+})
+
+test_succeeds("ExpGamma distribution works", {
+
+  skip_if_tfp_below("0.12")
+  d <- tfd_exp_gamma(concentration = 1, rate = 1)
+  expect_equal(d %>% tfd_mean() %>% tensor_value() %>% length(), 1)
+})
+
+test_succeeds("ExpInverseGamma distribution works", {
+
+  skip_if_tfp_below("0.12")
+  d <- tfd_exp_inverse_gamma(concentration = 1, scale = 1)
+  expect_equal(d %>% tfd_mean() %>% tensor_value() %>% length(), 1)
+})
 

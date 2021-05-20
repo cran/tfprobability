@@ -18,7 +18,7 @@
 #'
 #' @section References:
 #' - [Radford Neal. MCMC Using Hamiltonian Dynamics. _Handbook of Markov Chain Monte Carlo_, 2011.](https://arxiv.org/abs/1206.1901)
-#' - [Bernard Delyon, Marc Lavielle, Eric, Moulines. _Convergence of a stochastic approximation version of the EM algorithm_, Ann. Statist. 27 (1999), no. 1, 94--128.](https://projecteuclid.org/euclid.aos/1018031103)
+#' - [Bernard Delyon, Marc Lavielle, Eric, Moulines. _Convergence of a stochastic approximation version of the EM algorithm_, Ann. Statist. 27 (1999), no. 1, 94--128.](https://www.jstor.org/stable/120120?seq=1)
 #'
 #' @param target_log_prob_fn Function which takes an argument like
 #' `current_state` (if it's a list `current_state` will be unpacked) and returns its
@@ -68,10 +68,13 @@ mcmc_hamiltonian_monte_carlo <- function(target_log_prob_fn,
     num_leapfrog_steps = as.integer(num_leapfrog_steps),
     state_gradients_are_stopped = state_gradients_are_stopped,
     step_size_update_fn = step_size_update_fn,
-    seed = seed,
     store_parameters_in_results = store_parameters_in_results,
     name = name
   )
+
+  if (tfp_version() < "0.12") {
+    args$seed = seed
+  }
 
   do.call(tfp$mcmc$HamiltonianMonteCarlo, args)
 }
@@ -99,10 +102,13 @@ mcmc_uncalibrated_hamiltonian_monte_carlo <-
       step_size = step_size,
       num_leapfrog_steps = as.integer(num_leapfrog_steps),
       state_gradients_are_stopped = state_gradients_are_stopped,
-      seed = seed,
       store_parameters_in_results = store_parameters_in_results,
       name = name
     )
+
+    if (tfp_version() < "0.12") {
+      args$seed = seed
+    }
 
     do.call(tfp$mcmc$UncalibratedHamiltonianMonteCarlo, args)
   }
@@ -164,7 +170,6 @@ mcmc_uncalibrated_hamiltonian_monte_carlo <-
 #'
 #' @section References:
 #' - [Andrieu, Christophe, Thoms, Johannes. A tutorial on adaptive MCMC. _Statistics and Computing_, 2008.](https://people.eecs.berkeley.edu/~jordan/sail/readings/andrieu-thoms.pdf)
-#' - http://andrewgelman.com/2017/12/15/burn-vs-warm-iterative-simulation-algorithms/#comment-627745
 #' - [Betancourt, M. J., Byrne, S., & Girolami, M. (2014). _Optimizing The Integrator Step Size for Hamiltonian Monte Carlo_.](https://arxiv.org/abs/1411.6669)
 #'
 #' @param inner_kernel `TransitionKernel`-like object.
@@ -336,8 +341,11 @@ mcmc_metropolis_hastings <- function(inner_kernel,
                                      seed = NULL,
                                      name = NULL) {
   args <- list(inner_kernel = inner_kernel,
-               seed = seed,
                name = name)
+
+  if (tfp_version() < "0.12") {
+    args$seed = seed
+  }
 
   do.call(tfp$mcmc$MetropolisHastings, args)
 }
@@ -383,9 +391,12 @@ mcmc_random_walk_metropolis <- function(target_log_prob_fn,
   args <- list(
     target_log_prob_fn = target_log_prob_fn,
     new_state_fn = new_state_fn,
-    seed = seed,
     name = name
   )
+
+  if (tfp_version() < "0.12") {
+    args$seed = seed
+  }
 
   do.call(tfp$mcmc$RandomWalkMetropolis, args)
 }
@@ -411,7 +422,7 @@ mcmc_random_walk_metropolis <- function(target_log_prob_fn,
 #'
 #' @section References:
 #' - [Matthew Parno and Youssef Marzouk. Transport map accelerated Markov chain Monte Carlo. _arXiv preprint arXiv:1412.5492_, 2014.](https://arxiv.org/abs/1412.5492)
-#' - [Mark Girolami and Ben Calderhead. Riemann manifold langevin and hamiltonian monte carlo methods. In _Journal of the Royal Statistical Society_, 2011.](https://doi.org/10.1111/j.1467-9868.2010.00765.x)
+#' - [Mark Girolami and Ben Calderhead. Riemann manifold langevin and hamiltonian monte carlo methods. In _Journal of the Royal Statistical Society_, 2011.](http://people.ee.duke.edu/~lcarin/Girolami2011.pdf)
 #'
 #' @param inner_kernel `TransitionKernel`-like object which has a `target_log_prob_fn` argument.
 #' @param bijector bijector or list of bijectors. These bijectors use `forward` to map the
@@ -490,9 +501,9 @@ mcmc_transformed_transition_kernel <- function(inner_kernel,
 #' single distribution, all sampled in parallel.
 #'
 #' @section References:
-#' - [Matthew D. Hoffman, Andrew Gelman. The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo. In _Journal of Machine Learning Research_, 15(1):1593-1623, 2014.](http://jmlr.org/papers/volume15/hoffman14a/hoffman14a.pdf)
+#' - [Matthew D. Hoffman, Andrew Gelman. The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo. In _Journal of Machine Learning Research_, 15(1):1593-1623, 2014.](https://jmlr.org/papers/volume15/hoffman14a/hoffman14a.pdf)
 #' - [Yurii Nesterov. Primal-dual subgradient methods for convex problems. Mathematical programming 120.1 (2009): 221-259](https://link.springer.com/article/10.1007/s10107-007-0149-x)
-#' - [http://andrewgelman.com/2017/12/15/burn-vs-warm-iterative-simulation-algorithms/#comment-627745](http://andrewgelman.com/2017/12/15/burn-vs-warm-iterative-simulation-algorithms/#comment-627745)
+#' - [https://statmodeling.stat.columbia.edu/2017/12/15/burn-vs-warm-iterative-simulation-algorithms/](https://statmodeling.stat.columbia.edu/2017/12/15/burn-vs-warm-iterative-simulation-algorithms/)
 #'
 #' @param inner_kernel `TransitionKernel`-like object.
 #' @param num_adaptation_steps Scalar `integer` `Tensor` number of initial steps to
@@ -687,9 +698,9 @@ mcmc_dual_averaging_step_size_adaptation <- function(inner_kernel,
 #'  b1 <- samples[[2]]
 #'  df <- samples[[3]]
 #'
-#'  # bijector to map contrained parameters to real
+#'  # bijector to map constrained parameters to real
 #'  unconstraining_bijectors <- list(
-#'    tfb_identity(), tfb_identity(), tfb_identity(), tfb_exp())
+#'    tfb_identity(), tfb_identity(), tfb_exp())
 #'
 #'  trace_fn <- function(x, pkr) {
 #'    list(pkr$inner_results$inner_results$step_size,
@@ -734,9 +745,12 @@ mcmc_no_u_turn_sampler <- function(target_log_prob_fn,
     max_tree_depth = as.integer(max_tree_depth),
     max_energy_diff = max_energy_diff,
     unrolled_leapfrog_steps = as.integer(unrolled_leapfrog_steps),
-    seed = seed,
     name = name
   )
+
+  if (tfp_version() < "0.12") {
+    args$seed = seed
+  }
 
   do.call(tfp$mcmc$NoUTurnSampler, args)
 }
@@ -785,9 +799,12 @@ mcmc_uncalibrated_langevin <- function(target_log_prob_fn,
     volatility_fn = volatility_fn,
     parallel_iterations = as.integer(parallel_iterations),
     compute_acceptance = compute_acceptance,
-    seed = seed,
     name = name
   )
+
+  if (tfp_version() < "0.12") {
+    args$seed = seed
+  }
 
   do.call(tfp$mcmc$UncalibratedLangevin, args)
 }
@@ -813,7 +830,7 @@ mcmc_uncalibrated_langevin <- function(target_log_prob_fn,
 #' chains is `tf.size(target_log_prob_fn(current_state))`.)
 #'
 #' @section References:
-#' - [Gareth Roberts and Jeffrey Rosenthal. Optimal Scaling of Discrete Approximations to Langevin Diffusions. _Journal of the Royal Statistical Society: Series B (Statistical Methodology)_, 60: 255-268, 1998.](https://doi.org/10.1111/1467-9868.00123)
+#' - [Gareth Roberts and Jeffrey Rosenthal. Optimal Scaling of Discrete Approximations to Langevin Diffusions. _Journal of the Royal Statistical Society: Series B (Statistical Methodology)_, 60: 255-268, 1998.](http://probability.ca/jeff/ftpdir/lang.pdf)
 #' - [T. Xifara et al. Langevin diffusions and the Metropolis-adjusted Langevin algorithm. _arXiv preprint arXiv:1309.2983_, 2013.](https://arxiv.org/abs/1309.2983)
 #'
 #' @inheritParams mcmc_uncalibrated_langevin
@@ -831,9 +848,11 @@ mcmc_metropolis_adjusted_langevin_algorithm <-
       step_size = step_size,
       volatility_fn = volatility_fn,
       parallel_iterations = as.integer(parallel_iterations),
-      seed = seed,
       name = name
     )
+    if (tfp_version() < "0.12") {
+      args$seed = seed
+    }
     do.call(tfp$mcmc$MetropolisAdjustedLangevinAlgorithm, args)
   }
 
@@ -896,9 +915,12 @@ mcmc_replica_exchange_mc <- function(target_log_prob_fn,
     inverse_temperatures = inverse_temperatures,
     make_kernel_fn = make_kernel_fn,
     swap_proposal_fn = swap_proposal_fn,
-    seed = seed,
     name = name
   )
+
+  if (tfp_version() < "0.12") {
+    args$seed = seed
+  }
 
   if (tfp_version() > "0.11") args$state_includes_replicas = state_includes_replicas
 
@@ -962,9 +984,13 @@ mcmc_slice_sampler <- function(target_log_prob_fn,
     target_log_prob_fn = target_log_prob_fn,
     step_size = step_size,
     max_doublings = as.integer(max_doublings),
-    seed = seed,
     name = name
   )
+
+  if (tfp_version() < "0.12") {
+    args$seed = seed
+  }
+
   do.call(tfp$mcmc$SliceSampler, args)
 }
 
@@ -985,9 +1011,12 @@ mcmc_uncalibrated_random_walk <- function(target_log_prob_fn,
   args <- list(
     target_log_prob_fn = target_log_prob_fn,
     new_state_fn = new_state_fn,
-    seed = seed,
     name = name
   )
+
+  if (tfp_version() < "0.12") {
+    args$seed = seed
+  }
 
   do.call(tfp$mcmc$UncalibratedRandomWalk, args)
 }

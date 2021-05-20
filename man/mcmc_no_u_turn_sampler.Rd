@@ -116,9 +116,9 @@ robust_lm <- tfd_joint_distribution_sequential(
  b1 <- samples[[2]]
  df <- samples[[3]]
 
- # bijector to map contrained parameters to real
+ # bijector to map constrained parameters to real
  unconstraining_bijectors <- list(
-   tfb_identity(), tfb_identity(), tfb_identity(), tfb_exp())
+   tfb_identity(), tfb_identity(), tfb_exp())
 
  trace_fn <- function(x, pkr) {
    list(pkr$inner_results$inner_results$step_size,

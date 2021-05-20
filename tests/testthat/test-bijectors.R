@@ -150,14 +150,6 @@ test_succeeds("Define a matvec_lu bijector", {
   # expect_equal(x %>% tensor_value(), y_inv %>% tensor_value(), tol = 1e-6)
 })
 
-test_succeeds("Define a scale_tri_l bijector", {
-  b <- tfb_scale_tri_l(tfb_exp(), NULL)
-  x <- c(0, 0, 0)
-  expect_equal(b %>% tfb_forward(x) %>% tensor_value(), diag(2))
-  y <- matrix(c(1, 0, .5, 2), byrow = TRUE, ncol = 2)
-  expect_equivalent(b %>% tfb_inverse(y) %>% tensor_value(), c(log(2), .5, log(1)), tol = 1e-6)
-})
-
 test_succeeds("Define a sinh_arcsinh bijector", {
   b <- tfb_sinh_arcsinh()
   x <- c(0, 1, 2)
@@ -300,18 +292,36 @@ test_succeeds("Define a Cholesky outer product bijector", {
 })
 
 test_succeeds("Define a Cholesky to inverse Cholesky bijector", {
-  b <- tfb_cholesky_to_inv_cholesky()
-  chain <- tfb_chain(list(
-    tfb_invert(tfb_cholesky_outer_product()),
-    tfb_inline(
-      forward_fn = tf$linalg$inv,
-      forward_min_event_ndims = 1
-    ),
-    tfb_cholesky_outer_product()
-  ))
+
   x <- matrix(c(1, 0, 2, 1), ncol = 2, byrow = TRUE)
+
+  b <- tfb_cholesky_to_inv_cholesky()
+
+  # since 0.12:
+  # NotImplementedError: Subclasses without static min_event_ndims must override `inverse_event_ndims`
+  # chain <- tfb_chain(list(
+  #   tfb_invert(tfb_cholesky_outer_product()),
+  #   tfb_inline(
+  #     forward_fn = tf$linalg$inv,
+  #     forward_min_event_ndims = 1
+  #   ),
+  #   tfb_cholesky_outer_product()
+  # ))
+  #
+  # expect_equal(b %>% tfb_forward(x) %>% tensor_value(),
+  #              chain %>% tfb_forward(x) %>% tensor_value())
+
+  o <- tfb_cholesky_outer_product()
+  i <- tfb_inline(
+    forward_fn = tf$linalg$inv,
+    forward_min_event_ndims = 1
+  )
+  io <- tfb_invert(tfb_cholesky_outer_product())
+  # TypeError: forward() takes 2 positional arguments but 3 were given
+  # c <- io %>% tfb_forward(i %>% tfb_forward(o %>% tfb_forward(x)))
+  c <- io$forward(i %>% tfb_forward(o %>% tfb_forward(x)))
   expect_equal(b %>% tfb_forward(x) %>% tensor_value(),
-               chain %>% tfb_forward(x) %>% tensor_value())
+               c %>% tensor_value())
 })
 
 test_succeeds("Define a discrete cosine transform bijector", {
@@ -382,6 +392,7 @@ test_succeeds("Define a kumaraswamy bijector", {
 
 
 test_succeeds("Define an ordered bijector", {
+  skip_if_tfp_above("0.11")
   b <- tfb_ordered()
   x <- seq(0, 1, by = 0.1)
   y <- b %>% tfb_forward(x)
@@ -399,7 +410,7 @@ test_succeeds("Define a softplus bijector", {
   expect_equivalent(rev_x %>% tensor_value(), log(exp(x) - 1), tol = 1e-6)
 })
 
-test_succeeds("Define a softplus bijector", {
+test_succeeds("Define a softsign bijector", {
   b <- tfb_softsign()
   x <- matrix(1:8, ncol = 2, byrow = TRUE)
   expect_equivalent(b %>% tfb_forward(x) %>% tensor_value(), x / (1 + abs(x)), tol = 1e-6)
@@ -767,11 +778,52 @@ test_succeeds("Define a sinh bijector", {
   skip_if_tfp_below("0.11")
 
   b <- tfb_sinh()
-  x <- 0
+  x <- 1
   expect_equal(b %>% tfb_forward(x) %>% tensor_value(),
                tf$sinh(x) %>% tensor_value(),
                tol = 1e-6)
 })
+
+test_succeeds("Define a RayleighCDF bijector", {
+
+  skip_if_tfp_below("0.12")
+
+  scale <- 0.5
+  b <- tfb_rayleigh_cdf(scale = scale)
+  x <- 0.77
+  expect_equal(b %>% tfb_forward(x) %>% tensor_value(),
+               1 - exp(-(x/scale)^2 / 2),
+               tol = 1e-6)
+})
+
+test_succeeds("Define an ascending bijector", {
+  skip_if_tfp_below("0.12")
+  b <- tfb_ascending()
+  y <- c(2, 3, 4)
+  x <- c(2, 0, 0)
+  expect_equivalent(b %>% tfb_inverse(y) %>% tensor_value(), x, tol = 1e-6)
+})
+
+test_succeeds("Define a Glow bijector", {
+  skip_if_tfp_below("0.12")
+  image_shape <- c(32, 32, 4)
+
+  glow <- tfb_glow(
+    output_shape = image_shape,
+    coupling_bijector_fn = tfp$bijectors$GlowDefaultNetwork,
+    exit_bijector_fn = tfp$bijectors$GlowDefaultExitNetwork
+  )
+
+  pz <- tfd_sample_distribution(tfd_normal(0, 1), prod(image_shape))
+  px <- glow(pz)
+  image <- px$sample(1L)
+
+  expect_equal(dim(image), c(1, 32, 32, 4))
+})
+
+
+
+
 
 
 

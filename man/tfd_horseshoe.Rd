@@ -49,7 +49,7 @@ where \code{sigma ~ half_cauchy(0, 1)}
 
 \itemize{
 \item \href{https://faculty.chicagobooth.edu/nicholas.polson/research/papers/Horse.pdf}{Carvalho, Polson, Scott. Handling Sparsity via the Horseshoe (2008)}.
-\item \href{https://doi.org/10.1016/S0022-1694(99)00184-5}{Barry, Parlange, Li. Approximation for the exponential integral (2000)}.
+\item \href{https://ui.adsabs.harvard.edu/abs/2000JHyd..227..287B/abstract}{Barry, Parlange, Li. Approximation for the exponential integral (2000)}.
 }
 }
 
@@ -74,6 +74,8 @@ Other distributions:
 \code{\link{tfd_dirichlet_multinomial}()},
 \code{\link{tfd_dirichlet}()},
 \code{\link{tfd_empirical}()},
+\code{\link{tfd_exp_gamma}()},
+\code{\link{tfd_exp_inverse_gamma}()},
 \code{\link{tfd_exponential}()},
 \code{\link{tfd_gamma_gamma}()},
 \code{\link{tfd_gamma}()},
@@ -123,6 +125,7 @@ Other distributions:
 \code{\link{tfd_relaxed_one_hot_categorical}()},
 \code{\link{tfd_sample_distribution}()},
 \code{\link{tfd_sinh_arcsinh}()},
+\code{\link{tfd_skellam}()},
 \code{\link{tfd_spherical_uniform}()},
 \code{\link{tfd_student_t_process}()},
 \code{\link{tfd_student_t}()},

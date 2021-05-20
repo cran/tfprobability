@@ -96,7 +96,7 @@ Categorical probabilities over the components.
 \section{References}{
 
 \itemize{
-\item \href{https://pdfs.semanticscholar.org/9e90/6792f67cbdda7b7777b69284a81044857656.pdf}{Tim Salimans, Andrej Karpathy, Xi Chen, and Diederik P. Kingma. PixelCNN++: Improving the PixelCNN with Discretized Logistic Mixture Likelihood and Other Modifications. In \emph{International Conference on Learning Representations}, 2017.}
+\item \href{https://www.semanticscholar.org/paper/OTHER-MODIFICATIONS-Karpathy/2e77b99e8bd10b9e4551a780c0bde9dd10fdbe9b?p2df}{Tim Salimans, Andrej Karpathy, Xi Chen, and Diederik P. Kingma. PixelCNN++: Improving the PixelCNN with Discretized Logistic Mixture Likelihood and Other Modifications. In \emph{International Conference on Learning Representations}, 2017.}
 \item \href{https://arxiv.org/abs/1606.05328}{Aaron van den Oord, Nal Kalchbrenner, Oriol Vinyals, Lasse Espeholt, Alex Graves, and Koray Kavukcuoglu. Conditional Image Generation with PixelCNN Decoders. In \emph{Neural Information Processing Systems}, 2016.}
 \item \href{https://arxiv.org/pdf/1601.06759.pdf}{Aaron van den Oord, Nal Kalchbrenner, and Koray Kavukcuoglu. Pixel Recurrent Neural Networks. In \emph{International Conference on Machine Learning}, 2016.}
 }
@@ -123,6 +123,8 @@ Other distributions:
 \code{\link{tfd_dirichlet_multinomial}()},
 \code{\link{tfd_dirichlet}()},
 \code{\link{tfd_empirical}()},
+\code{\link{tfd_exp_gamma}()},
+\code{\link{tfd_exp_inverse_gamma}()},
 \code{\link{tfd_exponential}()},
 \code{\link{tfd_gamma_gamma}()},
 \code{\link{tfd_gamma}()},
@@ -172,6 +174,7 @@ Other distributions:
 \code{\link{tfd_relaxed_one_hot_categorical}()},
 \code{\link{tfd_sample_distribution}()},
 \code{\link{tfd_sinh_arcsinh}()},
+\code{\link{tfd_skellam}()},
 \code{\link{tfd_spherical_uniform}()},
 \code{\link{tfd_student_t_process}()},
 \code{\link{tfd_student_t}()},

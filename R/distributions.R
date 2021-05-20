@@ -450,13 +450,16 @@ tfd_transformed_distribution <- function(distribution,
   args <- list(
     distribution = distribution,
     bijector = bijector,
-    batch_shape = normalize_shape(batch_shape),
-    event_shape = normalize_shape(event_shape),
     kwargs_split_fn = kwargs_split_fn,
     validate_args = validate_args,
     parameters = parameters,
     name = name
   )
+
+  if (tfp_version() < "0.12") {
+    args$batch_shape <- normalize_shape(batch_shape)
+    args$event_shape <- normalize_shape(event_shape)
+  }
 
   do.call(tfp$distributions$TransformedDistribution, args)
 }
@@ -3518,7 +3521,7 @@ tfd_inverse_gamma <- function(concentration,
 #'
 #' @section References:
 #' - [Carvalho, Polson, Scott. Handling Sparsity via the Horseshoe (2008)](https://faculty.chicagobooth.edu/nicholas.polson/research/papers/Horse.pdf).
-#' - [Barry, Parlange, Li. Approximation for the exponential integral (2000)](https://doi.org/10.1016/S0022-1694(99)00184-5).
+#' - [Barry, Parlange, Li. Approximation for the exponential integral (2000)](https://ui.adsabs.harvard.edu/abs/2000JHyd..227..287B/abstract).
 #'
 #' @param scale Floating point tensor; the scales of the distribution(s). Must contain only positive values.
 #' @inherit tfd_normal return params
@@ -5324,7 +5327,7 @@ tfd_wishart_tri_l <- function(df,
 #' Categorical probabilities over the components.
 #'
 #' @section References:
-#' - [Tim Salimans, Andrej Karpathy, Xi Chen, and Diederik P. Kingma. PixelCNN++: Improving the PixelCNN with Discretized Logistic Mixture Likelihood and Other Modifications. In _International Conference on Learning Representations_, 2017.](https://pdfs.semanticscholar.org/9e90/6792f67cbdda7b7777b69284a81044857656.pdf)
+#' - [Tim Salimans, Andrej Karpathy, Xi Chen, and Diederik P. Kingma. PixelCNN++: Improving the PixelCNN with Discretized Logistic Mixture Likelihood and Other Modifications. In _International Conference on Learning Representations_, 2017.](https://www.semanticscholar.org/paper/OTHER-MODIFICATIONS-Karpathy/2e77b99e8bd10b9e4551a780c0bde9dd10fdbe9b?p2df)
 #' - [Aaron van den Oord, Nal Kalchbrenner, Oriol Vinyals, Lasse Espeholt, Alex Graves, and Koray Kavukcuoglu. Conditional Image Generation with PixelCNN Decoders. In _Neural Information Processing Systems_, 2016.](https://arxiv.org/abs/1606.05328)
 #' - [Aaron van den Oord, Nal Kalchbrenner, and Koray Kavukcuoglu. Pixel Recurrent Neural Networks. In _International Conference on Machine Learning_, 2016.](https://arxiv.org/pdf/1601.06759.pdf)
 #'
@@ -6184,8 +6187,196 @@ tfd_continuous_bernoulli <- function(logits = NULL,
           args)
 }
 
+#' Skellam distribution.
+#'
+#' The Skellam distribution is parameterized by two rate parameters,
+#' `rate1` and `rate2`. Its samples are defined as:
+#' ```
+#' x ~ Poisson(rate1)
+#' y ~ Poisson(rate2)
+#' z = x - y
+#' z ~ Skellam(rate1, rate2)
+#' ```
+#' where the samples `x` and `y` are assumed to be independent.
+#'
+#' Mathematical Details
+#' The probability mass function (pmf) is,
+#' ```
+#' pmf(k; l1, l2) = (l1 / l2) ** (k / 2) * I_k(2 * sqrt(l1 * l2)) / Z
+#' Z = exp(l1 + l2).
+#' ```
+#' where `rate1 = l1`, `rate2 = l2`,  `Z` is the normalizing constant
+#' and `I_k` is the modified bessel function of the first kind.
+#'
+#' @param rate1 Floating point tensor, the first rate parameter. `rate1` must be
+#' positive. Must specify exactly one of `rate1` and `log_rate1`
+#' @param rate2 Floating point tensor, the second rate parameter. `rate` must be
+#' positive.  Must specify exactly one of `rate2` and `log_rate2`.
+#' @param log_rate1 Floating point tensor, the log of the first rate parameter.
+#' Must specify exactly one of `rate1` and `log_rate1`.
+#' @param log_rate2 Floating point tensor, the log of the second rate parameter.
+#' Must specify exactly one of `rate2` and `log_rate2`.
+#' @param force_probs_to_zero_outside_support logical. When `TRUE`,
+#' `log_prob` returns `-inf` (and `prob` returns `0`) for non-integer
+#' inputs. When `FALSE`, `log_prob` evaluates the Skellam pmf as a
+#' continuous function (note that this function is not itself
+#' a normalized probability log-density). Default value: `FALSE`.
+#'
+#' @inherit tfd_normal return params
+#' @family distributions
+#' @seealso For usage examples see e.g. [tfd_sample()], [tfd_log_prob()], [tfd_mean()].
+#' @export
+tfd_skellam <- function(rate1 = NULL,
+                        rate2 = NULL,
+                        log_rate1 = NULL,
+                        log_rate2 = NULL,
+                        force_probs_to_zero_outside_support = FALSE,
+                        validate_args = FALSE,
+                        allow_nan_stats = TRUE,
+                        name = "Skellam") {
+  args <- list(
+    rate1 = rate1,
+    rate2 = rate2,
+    log_rate1 = log_rate1,
+    log_rate2 = log_rate2,
+    force_probs_to_zero_outside_support = force_probs_to_zero_outside_support,
+    validate_args = validate_args,
+    allow_nan_stats = allow_nan_stats,
+    name = name
+  )
 
+  do.call(tfp$distributions$Skellam,
+          args)
+}
 
+#' ExpGamma distribution.
+#'
+#' The ExpGamma distribution is defined over the real line using
+#' parameters `concentration` (aka "alpha") and `rate` (aka "beta").
+#' This distribution is a transformation of the Gamma distribution such that
+#' X ~ ExpGamma(..) => exp(X) ~ Gamma(..).
+#'
+#' Mathematical Details
+#'
+#' The probability density function (pdf) can be derived from the change of
+#' variables rule (since the distribution is logically equivalent to
+#' `tfb_log()(tfd_gamma(..))`):
+#' ```
+#' pdf(x; alpha, beta > 0) = exp(x)**(alpha - 1) exp(-exp(x) beta) / Z + x
+#' Z = Gamma(alpha) beta**(-alpha)
+#' ```
+#' where:
+#'   * `concentration = alpha`, `alpha > 0`,
+#'   * `rate = beta`, `beta > 0`,
+#'   * `Z` is the normalizing constant of the corresponding Gamma distribution, and
+#'   * `Gamma` is the [gamma function](https://en.wikipedia.org/wiki/Gamma_function).
+#'
+#' The cumulative density function (cdf) is,
+#' ```
+#' cdf(x; alpha, beta, x) = GammaInc(alpha, beta exp(x)) / Gamma(alpha)
+#' ```
+#' where `GammaInc` is the [lower incomplete Gamma function](https://en.wikipedia.org/wiki/Incomplete_gamma_function).
+#'
+#' Distribution parameters are automatically broadcast in all functions.
+#' Samples of this distribution are reparameterized (pathwise differentiable).
+#' The derivatives are computed using the approach described in Figurnov et al., 2018.
+#'
+#' @section References:
+#' - [Michael Figurnov, Shakir Mohamed, Andriy Mnih. Implicit Reparameterization Gradients. _arXiv preprint arXiv:1805.08498_, 2018.](https://arxiv.org/abs/1805.08498)
+#'
+#' @param concentration Floating point tensor, the concentration params of the
+#' distribution(s). Must contain only positive values.
+#' @param rate Floating point tensor, the inverse scale params of the
+#' distribution(s). Must contain only positive values. Mutually exclusive
+#' with `log_rate`.
+#' @param log_rate Floating point tensor, natural logarithm of the inverse scale
+#' params of the distribution(s). Mutually exclusive with `rate`.
+#'
+#' @inherit tfd_normal return params
+#' @family distributions
+#' @seealso For usage examples see e.g. [tfd_sample()], [tfd_log_prob()], [tfd_mean()].
+#' @export
+tfd_exp_gamma <- function(concentration,
+                          rate = NULL,
+                          log_rate = NULL,
+                          validate_args = FALSE,
+                          allow_nan_stats = TRUE,
+                          name = "ExpGamma") {
+  args <- list(
+    concentration = concentration,
+    rate = rate,
+    log_rate = log_rate,
+    validate_args = validate_args,
+    allow_nan_stats = allow_nan_stats,
+    name = name
+  )
+
+  do.call(tfp$distributions$ExpGamma,
+          args)
+}
+
+#' ExpInverseGamma distribution.
+#'
+#' The `ExpInverseGamma` distribution is defined over the real numbers such that
+#' X ~ ExpInverseGamma(..) => exp(X) ~ InverseGamma(..).
+#' The distribution is logically equivalent to `tfb_log()(tfd_inverse_gamma(..))`,
+#' but can be sampled with much better precision.
+#'
+#' Mathematical Details
+#'
+#' The probability density function (pdf) is very similar to ExpGamma,
+#' ```
+#' pdf(x; alpha, beta > 0) = exp(-x)**(alpha - 1) exp(-exp(-x) beta) / Z - x
+#' Z = Gamma(alpha) beta**(-alpha)
+#' ```
+#' where:
+#' * `concentration = alpha`,
+#' * `scale = beta`,
+#' * `Z` is the normalizing constant, and,
+#' * `Gamma` is the [gamma function](https://en.wikipedia.org/wiki/Gamma_function).
+#'
+#' The cumulative density function (cdf) is,
+#' ```
+#' cdf(x; alpha, beta, x) = 1 - GammaInc(alpha, beta exp(-x)) / Gamma(alpha)
+#' ```
+#' where `GammaInc` is the [upper incomplete Gamma function](https://en.wikipedia.org/wiki/Incomplete_gamma_function).
+#'
+#' Distribution parameters are automatically broadcast in all functions.
+#' Samples of this distribution are reparameterized (pathwise differentiable).
+#' The derivatives are computed using the approach described in Figurnov et al, 2018.
+#'
+#' @section References:
+#' - [Michael Figurnov, Shakir Mohamed, Andriy Mnih. Implicit Reparameterization Gradients. _arXiv preprint arXiv:1805.08498_, 2018.](https://arxiv.org/abs/1805.08498)
+#'
+#' @param concentration Floating point tensor, the concentration params of the
+#' distribution(s). Must contain only positive values.
+#' @param scale Floating point tensor, the scale params of the distribution(s).
+#' Must contain only positive values. Mutually exclusive with `log_scale`.
+#' @param log_scale Floating point tensor, the natural logarithm of the scale
+#' params of the distribution(s). Mutually exclusive with `scale`.
+#'
+#' @inherit tfd_normal return params
+#' @family distributions
+#' @seealso For usage examples see e.g. [tfd_sample()], [tfd_log_prob()], [tfd_mean()].
+#' @export
+tfd_exp_inverse_gamma <- function(concentration,
+                                  scale = NULL,
+                                  log_scale = NULL,
+                                  validate_args = FALSE,
+                                  allow_nan_stats = TRUE,
+                                  name = "ExpGamma") {
+  args <- list(
+    concentration = concentration,
+    scale = scale,
+    log_scale = log_scale,
+    validate_args = validate_args,
+    allow_nan_stats = allow_nan_stats,
+    name = name
+  )
+
+  do.call(tfp$distributions$ExpInverseGamma,
+          args)
+}
 
 
 
