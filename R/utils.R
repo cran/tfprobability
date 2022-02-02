@@ -54,7 +54,7 @@ as_float_tensor <- function(x) {
   }
 }
 
-as_tensor <- function(x) {
+as_tensors <- function(x) {
   if (is.list(x)) {
     Map(tf$convert_to_tensor, x)
   } else {
@@ -65,3 +65,5 @@ as_tensor <- function(x) {
 as_integer_list <- function(x) {
   lapply(x, as.integer)
 }
+
+capture_args <- get("capture_args", asNamespace("keras"))

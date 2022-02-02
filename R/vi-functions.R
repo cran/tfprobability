@@ -198,6 +198,12 @@ vi_kl_forward <-
 #' in estimating the variational divergence. Larger values may stabilize
 #' the optimization, but at higher cost per step in time and memory.
 #' Default value: `1`.
+#' @param importance_sample_size integer number of terms used to define an
+#'   importance-weighted divergence. If importance_sample_size > 1, then the
+#'   surrogate_posterior is optimized to function as an importance-sampling
+#'   proposal distribution. In this case it often makes sense to use importance
+#'   sampling to approximate posterior expectations (see
+#'   tfp.vi.fit_surrogate_posterior for an example). Default value: 1.
 #' @param discrepancy_fn function representing a Csiszar `f` function in
 #' in log-space. That is, `discrepancy_fn(log(u)) = f(u)`, where `f` is
 #' convex in `u`.  Default value: `vi_kl_reverse`.
@@ -219,23 +225,21 @@ vi_kl_forward <-
 #'
 #' @export
 vi_monte_carlo_variational_loss <-
-  function(target_log_prob_fn,
-           surrogate_posterior,
-           sample_size = 1,
-           discrepancy_fn = vi_kl_reverse,
-           use_reparametrization = NULL,
-           seed = NULL,
-           name = NULL) {
-    tfp$vi$monte_carlo_variational_loss(
-      target_log_prob_fn,
-      surrogate_posterior,
-      as.integer(sample_size),
-      discrepancy_fn,
-      use_reparametrization,
-      as_nullable_integer(seed),
-      name
-    )
-  }
+function(target_log_prob_fn,
+         surrogate_posterior,
+         sample_size = 1L,
+         importance_sample_size = 1L,
+         discrepancy_fn = vi_kl_reverse,
+         use_reparametrization = NULL,
+         seed = NULL,
+         name = NULL) {
+  args <- capture_args(match.call(),
+    list(sample_size = as.integer,
+         importance_sample_size = as.integer,
+         seed = as_nullable_integer))
+  names(args)[1:2] <- "" # first 2 args are required to be positional
+  do.call(tfp$vi$monte_carlo_variational_loss, args)
+}
 
 #' The Jensen-Shannon Csiszar-function in log-space
 #'

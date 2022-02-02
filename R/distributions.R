@@ -2632,10 +2632,6 @@ tfd_multinomial <- function(total_count,
 #' @param components A list or tuple of `Distribution` instances.
 #' Each instance must have the same type, be defined on the same domain,
 #' and have matching `event_shape` and `batch_shape`.
-#' @param use_static_graph Calls to `sample` will not rely on dynamic tensor
-#' indexing, allowing for some static graph compilation optimizations, but
-#' at the expense of sampling all underlying distributions in the mixture.
-#' (Possibly useful when running on TPUs). Default value: `FALSE` (i.e., use dynamic indexing).
 #' @inherit tfd_normal return params
 #' @family distributions
 #' @seealso For usage examples see e.g. [tfd_sample()], [tfd_log_prob()], [tfd_mean()].
@@ -2644,14 +2640,12 @@ tfd_mixture <- function(cat,
                         components,
                         validate_args = FALSE,
                         allow_nan_stats = TRUE,
-                        use_static_graph = FALSE,
                         name = "Mixture") {
   args <- list(
     cat = cat,
     components = components,
     validate_args = validate_args,
     allow_nan_stats = allow_nan_stats,
-    use_static_graph = use_static_graph,
     name = name
   )
 
@@ -6157,9 +6151,6 @@ tfd_johnson_s_u <- function(skewness,
 #' continuous Bernoulli distribution. Only one of `logits` or `probs`
 #' should be passed in. Note that this also does not correspond to a
 #' probability as in the Bernoulli case.
-#' @param lims A list with two floats containing the lower and upper limits
-#' used to approximate the continuous Bernoulli around 0.5 for
-#' numerical stability purposes.
 #' @param dtype The type of the event samples. Default: `float32`.
 #'
 #' @inherit tfd_normal return params
@@ -6168,15 +6159,14 @@ tfd_johnson_s_u <- function(skewness,
 #' @export
 tfd_continuous_bernoulli <- function(logits = NULL,
                                      probs = NULL,
-                                     lims = c(0.499, 0.501),
                                      dtype = tf$float32,
                                      validate_args = FALSE,
                                      allow_nan_stats = TRUE,
                                      name = "ContinuousBernoulli") {
+
   args <- list(
     logits = logits,
     probs = probs,
-    lims = lims,
     dtype = dtype,
     validate_args = validate_args,
     allow_nan_stats = allow_nan_stats,
@@ -6377,8 +6367,3 @@ tfd_exp_inverse_gamma <- function(concentration,
   do.call(tfp$distributions$ExpInverseGamma,
           args)
 }
-
-
-
-
-

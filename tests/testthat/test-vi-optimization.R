@@ -1,7 +1,5 @@
 context("vi-optimization")
 
-source("utils.R")
-
 test_succeeds("vi_fit_surrogate_posterior works", {
   skip_if_tfp_below("0.9")
 
@@ -76,7 +74,6 @@ test_succeeds("vi_fit_surrogate_posterior works", {
   forward_kl_loss <- function(target_log_prob_fn,
                               surrogate_posterior,
                               sample_size = 1,
-                              use_reparametrization = NULL,
                               seed = NULL,
                               name = NULL)
     vi_monte_carlo_variational_loss(
@@ -84,17 +81,18 @@ test_succeeds("vi_fit_surrogate_posterior works", {
       surrogate_posterior,
       sample_size,
       discrepancy_fn = vi_kl_forward,
-      use_reparametrization,
-      seed,
-      name
+      seed = seed,
+      name = name
     )
 
+
+  skip("variational_loss_fn arg in vi_fit_surrogate_posterior deprecated, needs updating")
   losses2 <- vi_fit_surrogate_posterior(
     target_log_prob_fn = conditioned_log_prob,
     surrogate_posterior = q_z2,
     optimizer = tf$optimizers$Adam(learning_rate = 0.1),
     num_steps = 100,
-    variational_loss_fn = forward_kl_loss
+    variational_loss_fn = forward_kl_loss # deprecated, needs removing
   )
 
   if (tf$executing_eagerly()) {

@@ -7,7 +7,8 @@
 vi_monte_carlo_variational_loss(
   target_log_prob_fn,
   surrogate_posterior,
-  sample_size = 1,
+  sample_size = 1L,
+  importance_sample_size = 1L,
   discrepancy_fn = vi_kl_reverse,
   use_reparametrization = NULL,
   seed = NULL,
@@ -37,6 +38,13 @@ transformations execute at runtime instead of at distribution creation.}
 in estimating the variational divergence. Larger values may stabilize
 the optimization, but at higher cost per step in time and memory.
 Default value: \code{1}.}
+
+\item{importance_sample_size}{integer number of terms used to define an
+importance-weighted divergence. If importance_sample_size > 1, then the
+surrogate_posterior is optimized to function as an importance-sampling
+proposal distribution. In this case it often makes sense to use importance
+sampling to approximate posterior expectations (see
+tfp.vi.fit_surrogate_posterior for an example). Default value: 1.}
 
 \item{discrepancy_fn}{function representing a Csiszar \code{f} function in
 in log-space. That is, \code{discrepancy_fn(log(u)) = f(u)}, where \code{f} is

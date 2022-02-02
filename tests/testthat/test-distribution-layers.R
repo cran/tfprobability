@@ -1,8 +1,6 @@
 
 context("tensorflow probability distribution layers")
 
-source("utils.R")
-
 test_succeeds("can use layer_multivariate_normal_tri_l in a keras model", {
   library(keras)
   n <- as.integer(1e3)
@@ -383,14 +381,20 @@ test_succeeds("layer_variational_gaussian_process works", {
   batch_size <- 64
   kl_weight <- batch_size/length(x)
   loss <- function(y, d) {
-    d$variational_loss(y, kl_weight=as_tensor(kl_weight))
+    d$variational_loss(y, kl_weight=as_tensors(kl_weight))
   }
 
   model %>%
     compile(optimizer = "adam", loss = loss)
 
+  x <- as_tensors(x)
+  y <- as_tensors(y)
+
+  x <- tf$expand_dims(x, -1L)
+  y <- tf$expand_dims(y, -1L)
+
   model %>%
-    fit(x = as_tensor(x), y = as_tensor(y), batch_size = batch_size)
+    fit(x = x, y = y, batch_size = batch_size, verbose = 0L)
 })
 
 

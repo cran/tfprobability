@@ -1,3 +1,9 @@
+
+Sys.setenv("CUDA_VISIBLE_DEVICES" = "")
+
+options(testthat.progress.max_fails = Inf)
+tensorflow::as_tensor(1)
+
 have_tfp <- function() {
   reticulate::py_module_available("tensorflow_probability")
 }
@@ -58,4 +64,4 @@ tensor_value <- function(tensor) {
   }
 }
 
-as_tensor <- tfprobability:::as_tensor
+as_tensors <- tfprobability:::as_tensors
