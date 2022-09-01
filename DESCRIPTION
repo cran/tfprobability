@@ -1,6 +1,6 @@
 Package: tfprobability
 Title: Interface to 'TensorFlow Probability'
-Version: 0.15.0
+Version: 0.15.1
 Authors@R: c(
     person("Tomasz", "Kalinowski", email = "tomasz.kalinowski@rstudio.com", role = c("ctb", "cre")),
     person("Sigrid", "Keydana", email = "sigrid@rstudio.com", role = c("aut")),
@@ -19,12 +19,12 @@ BugReports: https://github.com/rstudio/tfprobability/issues
 SystemRequirements: TensorFlow Probability
         (https://www.tensorflow.org/probability)
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Imports: tensorflow (>= 2.4.0), reticulate, keras, magrittr
 Suggests: tfdatasets, testthat (>= 2.1.0), knitr, rmarkdown
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2022-02-01 18:32:20 UTC; tomasz
+Packaged: 2022-08-31 17:00:12 UTC; tomasz
 Author: Tomasz Kalinowski [ctb, cre],
   Sigrid Keydana [aut],
   Daniel Falbel [ctb],
@@ -32,4 +32,4 @@ Author: Tomasz Kalinowski [ctb, cre],
   RStudio [cph]
 Maintainer: Tomasz Kalinowski <tomasz.kalinowski@rstudio.com>
 Repository: CRAN
-Date/Publication: 2022-02-02 10:00:02 UTC
+Date/Publication: 2022-09-01 09:10:05 UTC
